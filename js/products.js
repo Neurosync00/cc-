@@ -206,11 +206,111 @@ export function buildShoppingBag() {
   return g;
 }
 
+/* ----------------------------------------------------------- Car (BMW-style) */
+// A premium grand-tourer silhouette. Generic — no trademarked badging — so it
+// reads as a luxury sports sedan; swap in a real bmw.glb via the loader slot.
+export function buildCar() {
+  const g = new THREE.Group();
+
+  const bodyMat = physicalMat(PALETTE.ink, { roughness: 0.28, metalness: 0.55, envMapIntensity: 1.4 });
+  const trimMat = physicalMat(PALETTE.gold, { roughness: 0.25, metalness: 0.9, emissive: PALETTE.gold, emissiveIntensity: 0.12 });
+  const glassMat = new THREE.MeshStandardMaterial({ color: 0x10141c, roughness: 0.08, metalness: 0.2, envMapIntensity: 2.0 });
+
+  // Lower body — long, low slung
+  const lower = new THREE.Mesh(new THREE.BoxGeometry(4.6, 0.62, 1.95), bodyMat);
+  lower.position.y = 0.55;
+  g.add(lower);
+
+  // Hood + trunk taper (soften the box silhouette)
+  const hood = new THREE.Mesh(new THREE.BoxGeometry(1.5, 0.34, 1.85), bodyMat);
+  hood.position.set(1.55, 0.86, 0);
+  g.add(hood);
+  const trunk = new THREE.Mesh(new THREE.BoxGeometry(1.3, 0.4, 1.85), bodyMat);
+  trunk.position.set(-1.6, 0.86, 0);
+  g.add(trunk);
+
+  // Greenhouse / cabin — tapered toward the roof
+  const cabin = new THREE.Mesh(new THREE.BoxGeometry(2.3, 0.62, 1.7), bodyMat);
+  cabin.position.set(-0.05, 1.18, 0);
+  cabin.scale.set(1, 1, 0.82);
+  g.add(cabin);
+  const roof = new THREE.Mesh(new THREE.BoxGeometry(1.7, 0.12, 1.5), bodyMat);
+  roof.position.set(-0.15, 1.5, 0);
+  roof.scale.set(1, 1, 0.78);
+  g.add(roof);
+
+  // Glass: windshield, rear, sides
+  const windshield = new THREE.Mesh(new THREE.PlaneGeometry(1.0, 0.6), glassMat);
+  windshield.position.set(1.05, 1.2, 0);
+  windshield.rotation.y = Math.PI / 2;
+  windshield.rotation.z = -0.5;
+  g.add(windshield);
+  const rearGlass = windshield.clone();
+  rearGlass.position.set(-1.15, 1.2, 0);
+  rearGlass.rotation.z = 0.6;
+  g.add(rearGlass);
+  [-1, 1].forEach((z) => {
+    const side = new THREE.Mesh(new THREE.PlaneGeometry(2.0, 0.5), glassMat);
+    side.position.set(-0.1, 1.2, z * 0.71);
+    side.rotation.y = z > 0 ? 0 : Math.PI;
+    g.add(side);
+  });
+
+  // Twin "kidney" grille (generic vertical intakes)
+  [-0.22, 0.22].forEach((z) => {
+    const grille = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.34, 0.32), trimMat);
+    grille.position.set(2.32, 0.66, z);
+    g.add(grille);
+  });
+  // Front splitter
+  const splitter = new THREE.Mesh(new THREE.BoxGeometry(0.18, 0.08, 1.8), trimMat);
+  splitter.position.set(2.3, 0.34, 0);
+  g.add(splitter);
+
+  // Headlights + taillights (emissive)
+  const headMat = physicalMat(0xfff2d0, { emissive: 0xfff0c8, emissiveIntensity: 1.6, roughness: 0.2 });
+  const tailMat = physicalMat(0x7a1414, { emissive: 0xff3b30, emissiveIntensity: 1.2, roughness: 0.3 });
+  [-0.62, 0.62].forEach((z) => {
+    const hl = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.16, 0.5), headMat);
+    hl.position.set(2.31, 0.72, z);
+    g.add(hl);
+    const tl = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.16, 0.55), tailMat);
+    tl.position.set(-2.31, 0.78, z);
+    g.add(tl);
+  });
+
+  // Wheels with gold rims
+  const tireMat = physicalMat(0x0c0c0c, { roughness: 0.85, metalness: 0.1 });
+  const wheelY = 0.45, wheelX = 1.55, wheelZ = 1.0;
+  [[wheelX, wheelZ], [wheelX, -wheelZ], [-wheelX, wheelZ], [-wheelX, -wheelZ]].forEach(([x, z]) => {
+    const tire = new THREE.Mesh(new THREE.CylinderGeometry(0.5, 0.5, 0.34, 28), tireMat);
+    tire.rotation.x = Math.PI / 2;
+    tire.position.set(x, wheelY, z);
+    g.add(tire);
+    const rim = new THREE.Mesh(new THREE.CylinderGeometry(0.28, 0.28, 0.36, 16), trimMat);
+    rim.rotation.x = Math.PI / 2;
+    rim.position.set(x, wheelY, z);
+    g.add(rim);
+    // simple spokes
+    for (let s = 0; s < 5; s++) {
+      const spoke = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.05, 0.05), trimMat);
+      spoke.position.set(x, wheelY, z);
+      spoke.rotation.x = Math.PI / 2;
+      spoke.rotation.z = (s / 5) * Math.PI;
+      g.add(spoke);
+    }
+  });
+
+  g.scale.setScalar(0.62);
+  return g;
+}
+
 /* ----------------------------------------------------------- Registry */
 export const PRODUCT_BUILDERS = {
   sneaker: buildSneaker,
   skateboard: buildSkateboard,
   bag: buildShoppingBag,
+  bmw: buildCar,
 };
 
 /**

@@ -18,14 +18,27 @@ const CHAPTERS = [
   { key: "hero",  product: "sneaker",    mood: "dawn",       fog: 0.018, bloom: 0.9 },
   { key: "birth", product: "bag",        mood: "rose",       fog: 0.020, bloom: 1.1 },
   { key: "skate", product: "skateboard", mood: "chiaroscuro",fog: 0.028, bloom: 1.35 },
+  { key: "drive", product: "bmw",        mood: "midnight",   fog: 0.022, bloom: 1.25 },
   { key: "still", product: "trio",       mood: "amber",      fog: 0.016, bloom: 1.0 },
-  { key: "outro", product: "sneaker",    mood: "void",       fog: 0.034, bloom: 1.5 },
+  { key: "outro", product: "bmw",        mood: "void",       fog: 0.034, bloom: 1.5 },
 ];
+
+// Real GLTF models, preferred over the procedural meshes when reachable.
+// Order of preference per product: a local ./models/<key>.glb (if you add one),
+// otherwise the remote URL below, otherwise the in-engine procedural mesh.
+// Drop a skateboard.glb / bmw.glb into /models to make those real too.
+const MODELS = {
+  // three.js's production photoscanned sneaker (real GLTF, CORS-enabled CDN)
+  sneaker: "https://cdn.jsdelivr.net/gh/mrdoob/three.js@r161/examples/models/gltf/MaterialsVariantsShoe/glTF/MaterialsVariantsShoe.gltf",
+  skateboard: null,
+  bmw: null,
+};
 
 const MOODS = {
   dawn:        { top: "#241b12", mid: "#6b4a2c", glow: "#e9c187", accent: "#c8a86a" },
   rose:        { top: "#2a1822", mid: "#7d4b58", glow: "#e7b8a6", accent: "#d9a679" },
   chiaroscuro: { top: "#0a0807", mid: "#241a10", glow: "#b9863f", accent: "#caa05a" },
+  midnight:    { top: "#06080d", mid: "#1b2740", glow: "#9fb8c9", accent: "#c8a86a" },
   amber:       { top: "#1c150c", mid: "#5e4525", glow: "#e6c483", accent: "#c8a86a" },
   void:        { top: "#070605", mid: "#15110b", glow: "#8a6a37", accent: "#c8a86a" },
 };
@@ -251,19 +264,32 @@ export class World {
       const m = make(chapter.product);
       m.position.set(0, 0.2, 0);
       group.add(m);
+      this._tryUpgradeToRealModel(group, chapter.product, index);
     }
+  }
 
-    // Attempt to upgrade to a real GLTF export if present (silent fallback).
-    if (chapter.product !== "trio") {
-      loadGLTFProduct(`./models/${chapter.product}.glb`).then((gltf) => {
-        if (!gltf) return;
-        const old = group.children.find((c) => c.userData.isProduct);
-        if (old) group.remove(old);
-        this._frameAndCenter(gltf, 3);
-        gltf.position.set(0, 0.2, 0);
-        this._registerFloater(gltf, index);
-        group.add(gltf);
-      });
+  // Prefer a real model: local ./models/<key>.glb first, then the remote URL
+  // in MODELS, then keep the procedural mesh. Swaps in place when one loads.
+  async _tryUpgradeToRealModel(group, key, index) {
+    const sources = [`./models/${key}.glb`, MODELS[key]].filter(Boolean);
+    const targetSize = key === "bmw" ? 5.2 : 3;
+
+    for (const url of sources) {
+      const gltf = await loadGLTFProduct(url);
+      if (!gltf) continue;
+
+      // remove the procedural placeholder + its float animation entry
+      const old = group.children.find((c) => c.userData.isProduct);
+      if (old) {
+        group.remove(old);
+        this.floaters = this.floaters.filter((f) => f.mesh !== old);
+      }
+
+      this._frameAndCenter(gltf, targetSize);
+      gltf.position.set(0, 0.2, 0);
+      this._registerFloater(gltf, index);
+      group.add(gltf);
+      return; // first source that loads wins
     }
   }
 
