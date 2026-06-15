@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RINASCITA — A Renaissance / Streetwear Film</title>
+  <meta name="description" content="A cinematic digital world where classical paintings blend with floating streetwear — an interactive fashion film." />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,500;1,6..96,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="./css/style.css" />
+
+  <!-- Pin Three.js + addons so example imports resolve from one source -->
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://unpkg.com/three@0.161.0/build/three.module.js",
+      "three/addons/": "https://unpkg.com/three@0.161.0/examples/jsm/"
+    }
+  }
+  </script>
+</head>
+<body>
+  <!-- WebGL canvas lives behind everything -->
+  <canvas id="scene"></canvas>
+
+  <!-- Loading veil -->
+  <div id="loader" class="loader">
+    <div class="loader__inner">
+      <span class="loader__label">Entering the gallery</span>
+      <div class="loader__bar"><i></i></div>
+    </div>
+  </div>
+
+  <!-- Fixed editorial chrome -->
+  <header class="chrome">
+    <span class="chrome__brand">RINASCITA</span>
+    <span class="chrome__meta">F/W — DIGITAL ATELIER</span>
+    <span class="chrome__scroll">scroll to drift ↓</span>
+  </header>
+
+  <!-- Scroll-driven editorial content. The 3D world reacts to these sections. -->
+  <main class="content">
+
+    <section class="panel panel--hero" data-scene="0">
+      <p class="kicker">An interactive fashion film</p>
+      <h1 class="display">
+        <span class="line">RENA<span class="ital">i</span>SSANCE</span>
+        <span class="line line--offset">STREE<span class="ital">t</span>WEAR</span>
+      </h1>
+      <p class="lede">Where the sacred meets the sold out. Drift through a gallery that breathes — classical light, floating product, no frames.</p>
+    </section>
+
+    <section class="panel panel--right" data-scene="1">
+      <p class="kicker">Chapter I</p>
+      <h2 class="headline">The<br/>Birth of<br/><span class="ital">Drip</span></h2>
+      <p class="body">Venus arrives not on a shell but on a cushion of air-soled hype. Gold dust hangs where halos used to be.</p>
+    </section>
+
+    <section class="panel panel--left" data-scene="2">
+      <p class="kicker">Chapter II</p>
+      <h2 class="headline">Skate<br/>the<br/><span class="ital">Sublime</span></h2>
+      <p class="body">A single deck suspended in chiaroscuro. The void below is Caravaggio. The grip tape is now.</p>
+    </section>
+
+    <section class="panel panel--center" data-scene="3">
+      <p class="kicker">Chapter III</p>
+      <h2 class="headline">Still Life,<br/>Still <span class="ital">Hype</span></h2>
+      <p class="body">An arrangement of objects worth more than the fruit the old masters painted. Composition is everything.</p>
+    </section>
+
+    <section class="panel panel--outro" data-scene="4">
+      <h2 class="display display--small"><span class="ital">Fin.</span></h2>
+      <p class="lede">The gallery never closes. It only reloads.</p>
+      <p class="credits">Three.js · WebGL · GSAP · Lenis — a digital atelier study</p>
+    </section>
+
+  </main>
+
+  <!-- Scene captions that fade in over the 3D world -->
+  <div class="overlay" aria-hidden="true">
+    <span class="overlay__index"><i data-index>01</i> / 05</span>
+  </div>
+
+  <script type="module" src="./js/main.js"></script>
+
+  <!-- Watchdog: if the CDN modules never load (offline / blocked network),
+       don't trap the visitor behind the loading veil. -->
+  <script>
+    setTimeout(function () {
+      var loader = document.getElementById("loader");
+      if (loader && !loader.classList.contains("is-done")) {
+        var label = loader.querySelector(".loader__label");
+        if (label) label.textContent = "Need network for Three.js · GSAP · Lenis (CDN)";
+      }
+    }, 9000);
+  </script>
+</body>
+</html>

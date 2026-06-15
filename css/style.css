@@ -1,0 +1,183 @@
+:root {
+  --ink: #f4efe6;
+  --ink-dim: rgba(244, 239, 230, 0.55);
+  --bg: #0b0a08;
+  --gold: #c8a86a;
+  --serif-display: "Bodoni Moda", "Cormorant Garamond", serif;
+  --serif-body: "Cormorant Garamond", serif;
+  --sans: "Inter", system-ui, sans-serif;
+  --ease-cinematic: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html, body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--serif-body);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+body { overflow-x: hidden; }
+
+/* The WebGL gallery sits behind the editorial layer */
+#scene {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 0;
+  display: block;
+}
+
+/* ----------------------------------------------------------- Loader */
+.loader {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: var(--bg);
+  display: grid;
+  place-items: center;
+  transition: opacity 1.1s var(--ease-cinematic), visibility 1.1s;
+}
+.loader.is-done { opacity: 0; visibility: hidden; }
+.loader__inner { width: min(320px, 60vw); text-align: center; }
+.loader__label {
+  font-family: var(--sans);
+  font-size: 0.72rem;
+  letter-spacing: 0.42em;
+  text-transform: uppercase;
+  color: var(--ink-dim);
+}
+.loader__bar {
+  margin-top: 1.4rem;
+  height: 1px;
+  background: rgba(244, 239, 230, 0.14);
+  overflow: hidden;
+}
+.loader__bar i {
+  display: block;
+  height: 100%;
+  width: 0%;
+  background: var(--gold);
+  transition: width 0.4s linear;
+}
+
+/* ----------------------------------------------------------- Chrome */
+.chrome {
+  position: fixed;
+  inset: 0 0 auto 0;
+  z-index: 20;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.6rem clamp(1.2rem, 4vw, 3.4rem);
+  font-family: var(--sans);
+  font-size: 0.66rem;
+  letter-spacing: 0.34em;
+  text-transform: uppercase;
+  mix-blend-mode: difference;
+}
+.chrome__brand { letter-spacing: 0.5em; }
+.chrome__meta { color: var(--ink-dim); }
+.chrome__scroll { color: var(--ink-dim); }
+@media (max-width: 640px) { .chrome__meta { display: none; } }
+
+/* ----------------------------------------------------------- Content */
+.content {
+  position: relative;
+  z-index: 10;
+  pointer-events: none;
+}
+
+.panel {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 12vh clamp(1.4rem, 7vw, 9rem);
+}
+.panel--right { align-items: flex-end; text-align: right; }
+.panel--left  { align-items: flex-start; }
+.panel--center{ align-items: center; text-align: center; }
+.panel--outro { align-items: center; text-align: center; min-height: 110vh; }
+
+.kicker {
+  font-family: var(--sans);
+  font-size: 0.7rem;
+  letter-spacing: 0.42em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 1.6rem;
+}
+
+/* Oversized editorial display type */
+.display {
+  font-family: var(--serif-display);
+  font-weight: 400;
+  line-height: 0.86;
+  letter-spacing: -0.01em;
+  font-size: clamp(3.4rem, 13vw, 12rem);
+  text-transform: uppercase;
+}
+.display .line { display: block; }
+.display .line--offset { margin-left: clamp(0px, 6vw, 9rem); }
+.display--small { font-size: clamp(4rem, 16vw, 11rem); text-transform: none; }
+
+.headline {
+  font-family: var(--serif-display);
+  font-weight: 400;
+  line-height: 0.88;
+  font-size: clamp(2.8rem, 9vw, 7.5rem);
+}
+
+.ital { font-style: italic; color: var(--gold); }
+
+.lede {
+  max-width: 30ch;
+  margin-top: 2rem;
+  font-size: clamp(1.2rem, 2.2vw, 1.9rem);
+  line-height: 1.4;
+  color: var(--ink-dim);
+  font-weight: 300;
+}
+.panel--center .lede, .panel--outro .lede { margin-left: auto; margin-right: auto; }
+
+.body {
+  max-width: 34ch;
+  margin-top: 1.8rem;
+  font-size: clamp(1.05rem, 1.8vw, 1.5rem);
+  line-height: 1.5;
+  color: var(--ink-dim);
+  font-weight: 300;
+}
+.panel--right .body { margin-left: auto; }
+
+.credits {
+  font-family: var(--sans);
+  font-size: 0.66rem;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: var(--ink-dim);
+  margin-top: 3rem;
+}
+
+/* ----------------------------------------------------------- Overlay index */
+.overlay {
+  position: fixed;
+  left: clamp(1.2rem, 4vw, 3.4rem);
+  bottom: 1.6rem;
+  z-index: 20;
+  font-family: var(--sans);
+  font-size: 0.66rem;
+  letter-spacing: 0.34em;
+  text-transform: uppercase;
+  color: var(--ink-dim);
+  mix-blend-mode: difference;
+}
+.overlay__index i { font-style: normal; color: var(--ink); }
+
+@media (prefers-reduced-motion: reduce) {
+  * { scroll-behavior: auto !important; }
+}

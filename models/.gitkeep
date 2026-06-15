@@ -1,0 +1,4 @@
+# Drop optional GLTF/GLB product exports here, named by product key:
+#   sneaker.glb   skateboard.glb   bag.glb
+# world.js will auto-load, center, and scale them, replacing the procedural mesh.
+# If absent, the procedural meshes in js/products.js are used instead.
